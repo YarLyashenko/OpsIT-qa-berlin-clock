@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BerlinClock implements TimeConverter {
-    public static final String YELLOW = "Y";
-    public static final String OFF = "O";
-    public static final String RED = "R";
+    private static final String YELLOW = "Y";
+    private static final String OFF = "O";
+    private static final String RED = "R";
     private static final Logger LOG = LoggerFactory.getLogger(BerlinClock.class);
 
     @Override
@@ -20,76 +20,106 @@ public class BerlinClock implements TimeConverter {
         }
     }
 
+    /**
+     * Method which return composed string with lamps for all rows
+     *
+     * @param time in format 00:00:00
+     * @return string with time formatted as Berlin clock
+     */
     private String getFormattedTime(String time) {
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         String[] splittedTime = time.split(":");
-        stringBuffer.append("\r\n");
-        stringBuffer.append(getSecondsLamp(splittedTime[2]));
-        stringBuffer.append("\r\n");
-        stringBuffer.append(getHoursFirstRowLamps(splittedTime[0]));
-        stringBuffer.append("\r\n");
-        stringBuffer.append(getHoursSecondRowLamps(splittedTime[0]));
-        stringBuffer.append("\r\n");
-        stringBuffer.append(getMinutesFirstRowLamps(splittedTime[1]));
-        stringBuffer.append("\r\n");
-        stringBuffer.append(getMinutesSecondRowLamps(splittedTime[1]));
-        return stringBuffer.toString();
+        stringBuilder.append("\r\n");
+        stringBuilder.append(getSecondsLamp(splittedTime[2]));
+        stringBuilder.append("\r\n");
+        stringBuilder.append(getHoursFirstRowLamps(splittedTime[0]));
+        stringBuilder.append("\r\n");
+        stringBuilder.append(getHoursSecondRowLamps(splittedTime[0]));
+        stringBuilder.append("\r\n");
+        stringBuilder.append(getMinutesFirstRowLamps(splittedTime[1]));
+        stringBuilder.append("\r\n");
+        stringBuilder.append(getMinutesSecondRowLamps(splittedTime[1]));
+        return stringBuilder.toString();
     }
 
+    /**
+     * Method which return string with lamps for first hours row
+     *
+     * @param inputHours string with hours in 2 digits format
+     * @return string with lamps for first row
+     */
     private String getHoursFirstRowLamps(String inputHours) {
-        int numberOfLumpsOn = Integer.parseInt(inputHours) / 5;
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 1; i <= numberOfLumpsOn; i++) {
-            stringBuffer.append(RED);
-        }
-        for (int i = numberOfLumpsOn + 1; i <= 4; i++) {
-            stringBuffer.append(OFF);
-        }
-        return stringBuffer.toString();
+        return getRowLamps(Integer.parseInt(inputHours) / 5, 4, RED);
     }
 
+    /**
+     * Method which return string with lamps for second hours row
+     *
+     * @param inputHours string with hours in 2 digits format
+     * @return string with lamps for second row
+     */
     private String getHoursSecondRowLamps(String inputHours) {
-        int numberOfLumpsOn = Integer.parseInt(inputHours) % 5;
-        StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 1; i <= numberOfLumpsOn; i++) {
-            stringBuffer.append(RED);
-        }
-        for (int i = numberOfLumpsOn + 1; i <= 4; i++) {
-            stringBuffer.append(OFF);
-        }
-        return stringBuffer.toString();
+        return getRowLamps(Integer.parseInt(inputHours) % 5, 4, RED);
     }
 
+    /**
+     * Method which return string with lamps for first minutes row
+     *
+     * @param inputMinutes string with minutes  in 2 digits format
+     * @return string with lamps for first row
+     */
     private String getMinutesFirstRowLamps(String inputMinutes) {
         int numberOfLumpsOn = Integer.parseInt(inputMinutes) / 5;
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
 
         for (int i = 1; i <= numberOfLumpsOn; i++) {
             if (0 == i % 3) {
-                stringBuffer.append(RED);
+                stringBuilder.append(RED);
             } else {
-                stringBuffer.append(YELLOW);
+                stringBuilder.append(YELLOW);
             }
         }
         for (int i = numberOfLumpsOn + 1; i <= 11; i++) {
-            stringBuffer.append(OFF);
+            stringBuilder.append(OFF);
         }
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
+    /**
+     * Method which return string with lamps for second minutes row
+     *
+     * @param inputMinutes string with minutes  in 2 digits format
+     * @return string with lamps for second row
+     */
     private String getMinutesSecondRowLamps(String inputMinutes) {
-        int numberOfLumpsOn = Integer.parseInt(inputMinutes) % 5;
-        StringBuffer stringBuffer = new StringBuffer();
-
-        for (int i = 1; i <= numberOfLumpsOn; i++) {
-            stringBuffer.append(YELLOW);
-        }
-        for (int i = numberOfLumpsOn + 1; i <= 4; i++) {
-            stringBuffer.append(OFF);
-        }
-        return stringBuffer.toString();
+        return getRowLamps(Integer.parseInt(inputMinutes) % 5, 4, YELLOW);
     }
 
+    /**
+     * Method which return composed string with lamps enabled\disabled according to parameters
+     *
+     * @param numberOfLampsEnabled amount of enabled lamps in current row
+     * @param numberOfLampsInRow   amount of lamps in current row
+     * @param colorOfEnabledLamp   color of enabled lamps in current row
+     * @return string with lamps
+     */
+    private String getRowLamps(int numberOfLampsEnabled, int numberOfLampsInRow, String colorOfEnabledLamp) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 1; i <= numberOfLampsEnabled; i++) {
+            stringBuilder.append(colorOfEnabledLamp);
+        }
+        for (int i = numberOfLampsEnabled + 1; i <= numberOfLampsInRow; i++) {
+            stringBuilder.append(OFF);
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Method which return string with lamps for seconds row
+     *
+     * @param seconds string with seconds  in 2 digits format
+     * @return string with lamps for seconds row
+     */
     private String getSecondsLamp(String seconds) {
         if (Integer.parseInt(seconds) % 2 == 0) {
             return YELLOW;
