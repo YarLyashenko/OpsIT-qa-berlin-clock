@@ -1,12 +1,21 @@
 package com.ubs.opsit.interviews;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BerlinClock implements TimeConverter {
+    public static final String YELLOW = "Y";
+    public static final String OFF = "O";
+    public static final String RED = "R";
+    private static final Logger LOG = LoggerFactory.getLogger(BerlinClock.class);
 
     @Override
     public String convertTime(String aTime) {
         if (aTime.matches("([01][0-9]|2[0-4]):[0-5][0-9]:[0-5][0-9]")) {
             return getFormattedTime(aTime);
         } else {
+            LOG.error("Time passed to BerlinClock is in wrong format. " +
+                    "Should be string time started from 00:00:00 to 24:00:00.");
             return null;
         }
     }
@@ -17,69 +26,75 @@ public class BerlinClock implements TimeConverter {
         stringBuffer.append("\r\n");
         stringBuffer.append(getSecondsLamp(splittedTime[2]));
         stringBuffer.append("\r\n");
-        stringBuffer.append(getHoursLamps(splittedTime[0]));
+        stringBuffer.append(getHoursFirstRowLamps(splittedTime[0]));
         stringBuffer.append("\r\n");
-        stringBuffer.append(getMinutesLamps(splittedTime[1]));
+        stringBuffer.append(getHoursSecondRowLamps(splittedTime[0]));
+        stringBuffer.append("\r\n");
+        stringBuffer.append(getMinutesFirstRowLamps(splittedTime[1]));
+        stringBuffer.append("\r\n");
+        stringBuffer.append(getMinutesSecondRowLamps(splittedTime[1]));
         return stringBuffer.toString();
     }
 
-    private String getHoursLamps(String inputHours) {
-        int hours = Integer.parseInt(inputHours);
+    private String getHoursFirstRowLamps(String inputHours) {
+        int numberOfLumpsOn = Integer.parseInt(inputHours) / 5;
         StringBuffer stringBuffer = new StringBuffer();
-        for (int i = 0; i < 4; i++) {
-            if (hours / 5 > 0) {
-                stringBuffer.append("R");
-                hours = hours - 5;
-            } else {
-                stringBuffer.append("O");
-            }
+        for (int i = 1; i <= numberOfLumpsOn; i++) {
+            stringBuffer.append(RED);
         }
-        stringBuffer.append("\r\n");
-        for (int i = 0; i < 4; i++) {
-            if (hours % 5 > 0) {
-                stringBuffer.append("R");
-                hours--;
-            } else {
-                stringBuffer.append("O");
-            }
+        for (int i = numberOfLumpsOn + 1; i <= 4; i++) {
+            stringBuffer.append(OFF);
         }
         return stringBuffer.toString();
     }
 
-    private String getMinutesLamps(String inputMinutes) {
-        int minutes = Integer.parseInt(inputMinutes);
-        int numberOfRedLamps = minutes / 15;
+    private String getHoursSecondRowLamps(String inputHours) {
+        int numberOfLumpsOn = Integer.parseInt(inputHours) % 5;
+        StringBuffer stringBuffer = new StringBuffer();
+        for (int i = 1; i <= numberOfLumpsOn; i++) {
+            stringBuffer.append(RED);
+        }
+        for (int i = numberOfLumpsOn + 1; i <= 4; i++) {
+            stringBuffer.append(OFF);
+        }
+        return stringBuffer.toString();
+    }
+
+    private String getMinutesFirstRowLamps(String inputMinutes) {
+        int numberOfLumpsOn = Integer.parseInt(inputMinutes) / 5;
         StringBuffer stringBuffer = new StringBuffer();
 
-        for (int i = 0; i < 11; i++) {
-            if (minutes / 5 > 0) {
-                stringBuffer.append("Y");
-                minutes = minutes - 5;
+        for (int i = 1; i <= numberOfLumpsOn; i++) {
+            if (0 == i % 3) {
+                stringBuffer.append(RED);
             } else {
-                stringBuffer.append("O");
+                stringBuffer.append(YELLOW);
             }
         }
-        while (numberOfRedLamps > 0) {
-            stringBuffer.replace(numberOfRedLamps * 3 - 1, numberOfRedLamps * 3, "R");
-            numberOfRedLamps--;
+        for (int i = numberOfLumpsOn + 1; i <= 11; i++) {
+            stringBuffer.append(OFF);
         }
-        stringBuffer.append("\r\n");
-        for (int i = 0; i < 4; i++) {
-            if (minutes % 5 > 0) {
-                stringBuffer.append("Y");
-                minutes--;
-            } else {
-                stringBuffer.append("O");
-            }
+        return stringBuffer.toString();
+    }
+
+    private String getMinutesSecondRowLamps(String inputMinutes) {
+        int numberOfLumpsOn = Integer.parseInt(inputMinutes) % 5;
+        StringBuffer stringBuffer = new StringBuffer();
+
+        for (int i = 1; i <= numberOfLumpsOn; i++) {
+            stringBuffer.append(YELLOW);
+        }
+        for (int i = numberOfLumpsOn + 1; i <= 4; i++) {
+            stringBuffer.append(OFF);
         }
         return stringBuffer.toString();
     }
 
     private String getSecondsLamp(String seconds) {
         if (Integer.parseInt(seconds) % 2 == 0) {
-            return "Y";
+            return YELLOW;
         } else {
-            return "O";
+            return OFF;
         }
     }
 }
