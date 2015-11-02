@@ -31,6 +31,7 @@ public class BerlinClockFixture {
 
     @Then("Berlin clock should look like$clock")
     public void berlinClockShouldLookLike(String clock) {
-        assertEquals(berlinClock.convertTime(inputTime), clock);
+        berlinClock = new BerlinClock();
+        assertEquals(clock, berlinClock.convertTime(inputTime));
     }
 }

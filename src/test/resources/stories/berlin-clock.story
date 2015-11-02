@@ -8,7 +8,7 @@ Narrative:
     I want to tell the time using the Berlin Clock
     So that I can increase the number of ways that I can read the time
 
-Scenario: Midnight
+Scenario: Midnight 00
 When the time is 00:00:00
 Then Berlin clock should look like
 Y
@@ -32,7 +32,7 @@ Then Berlin clock should look like
 O
 OOOO
 OOOO
-YYRYYRYYRYYR
+YYRYYRYYRYY
 OOOO
 
 Scenario: Morning
@@ -42,7 +42,7 @@ Y
 ROOO
 RRRR
 OOOOOOOOOOO
-RRRR
+YYYY
 
 Scenario: Noon
 When the time is 12:00:00
@@ -67,6 +67,15 @@ When the time is 23:59:59
 Then Berlin clock should look like
 O
 RRRR
+RRRO
+YYRYYRYYRYY
+YYYY
+
+Scenario: Midnight 24
+When the time is 24:00:00
+Then Berlin clock should look like
+Y
 RRRR
-YYRYYRYYRYYR
 RRRR
+OOOOOOOOOOO
+OOOO
