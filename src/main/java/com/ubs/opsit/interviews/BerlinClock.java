@@ -29,6 +29,7 @@ public class BerlinClock implements TimeConverter {
     private String getFormattedTime(String time) {
         StringBuilder stringBuilder = new StringBuilder();
         String[] splittedTime = time.split(":");
+
         stringBuilder.append("\r\n");
         stringBuilder.append(getSecondsLamp(splittedTime[2]));
         stringBuilder.append("\r\n");
@@ -69,20 +70,7 @@ public class BerlinClock implements TimeConverter {
      * @return string with lamps for first row
      */
     private String getMinutesFirstRowLamps(String inputMinutes) {
-        int numberOfLumpsOn = Integer.parseInt(inputMinutes) / 5;
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 1; i <= numberOfLumpsOn; i++) {
-            if (0 == i % 3) {
-                stringBuilder.append(RED);
-            } else {
-                stringBuilder.append(YELLOW);
-            }
-        }
-        for (int i = numberOfLumpsOn + 1; i <= 11; i++) {
-            stringBuilder.append(OFF);
-        }
-        return stringBuilder.toString();
+        return getRowLamps(Integer.parseInt(inputMinutes) / 5, 11, YELLOW);
     }
 
     /**
@@ -105,8 +93,21 @@ public class BerlinClock implements TimeConverter {
      */
     private String getRowLamps(int numberOfLampsEnabled, int numberOfLampsInRow, String colorOfEnabledLamp) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 1; i <= numberOfLampsEnabled; i++) {
-            stringBuilder.append(colorOfEnabledLamp);
+        switch (numberOfLampsInRow) {
+            case 11:
+                for (int i = 1; i <= numberOfLampsEnabled; i++) {
+                    if (0 == (i % 3)) {
+                        stringBuilder.append(RED);
+                    } else {
+                        stringBuilder.append(colorOfEnabledLamp);
+                    }
+                }
+                break;
+            default:
+                for (int i = 1; i <= numberOfLampsEnabled; i++) {
+                    stringBuilder.append(colorOfEnabledLamp);
+                }
+                break;
         }
         for (int i = numberOfLampsEnabled + 1; i <= numberOfLampsInRow; i++) {
             stringBuilder.append(OFF);
@@ -121,10 +122,6 @@ public class BerlinClock implements TimeConverter {
      * @return string with lamps for seconds row
      */
     private String getSecondsLamp(String seconds) {
-        if (Integer.parseInt(seconds) % 2 == 0) {
-            return YELLOW;
-        } else {
-            return OFF;
-        }
+        return getRowLamps((Integer.parseInt(seconds) + 1) % 2, 1, YELLOW);
     }
 }
