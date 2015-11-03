@@ -11,11 +11,11 @@ public class BerlinClock implements TimeConverter {
 
     @Override
     public String convertTime(String aTime) {
-        if (aTime.matches("([01][0-9]|2[0-4]):[0-5][0-9]:[0-5][0-9]")) {
+        if (aTime != null && aTime.matches("([01][0-9]|2[0-4]):[0-5][0-9]:[0-5][0-9]")) {
             return getFormattedTime(aTime);
         } else {
             LOG.error("Time passed to BerlinClock is in wrong format. " +
-                    "Should be string time started from 00:00:00 to 24:00:00.");
+                    "Should be string time started from 00:00:00 to 24:00:00. Actual time: " + aTime);
             return null;
         }
     }
